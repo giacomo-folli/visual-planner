@@ -7,9 +7,9 @@ interface TokenClient extends google.accounts.oauth2.TokenClient {
 }
 
 interface QueryParams {
-    maxResults: number
-    orderBy: "startTime"
-    singleEvents: boolean
+    maxResults?: number
+    to?: Date
+    from?: Date
 }
 
 class GoogleService {
@@ -23,8 +23,8 @@ class GoogleService {
     constructor(params?: QueryParams) {
         this.params = params || {
             maxResults: 150,
-            orderBy: "startTime",
-            singleEvents: false
+            to: new Date(new Date().getFullYear(), 11, 30),
+            from: new Date(new Date().getFullYear(), 0, 1)
         }
     }
 
@@ -35,8 +35,6 @@ class GoogleService {
             // @ts-ignore
             callback: '', // defined at request time
         });
-
-        console.log("Received", this.tokenClient)
     }
 
     async authAndListEvents(store: CalendarEventStore) {
@@ -77,11 +75,21 @@ class GoogleService {
     }
 
     async listUpcomingEvents(store: CalendarEventStore) {
-        let url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
+        let url = new URL('https://www.googleapis.com/calendar/v3/calendars/primary/events')
 
         if (this.params) {
             // apply params to url
+
+            if (this.params.from)
+                url.searchParams.append('timeMin', this.params.from.toISOString());
+            if (this.params.to)
+                url.searchParams.append('timeMax', this.params.to.toISOString());
+            if (this.params.maxResults)
+                url.searchParams.append('maxResults', this.params.maxResults.toString());
         }
+
+        url.searchParams.append('orderBy', 'startTime');
+        url.searchParams.append('singleEvents', 'true');
 
         try {
             const response = await fetch(url,
@@ -95,10 +103,10 @@ class GoogleService {
             );
 
             const data = await response.json();
+            console.log(data.items)
 
             // Add new events to the store
             store.add(data.items);
-
         } catch (error) {
             console.error(error)
         }

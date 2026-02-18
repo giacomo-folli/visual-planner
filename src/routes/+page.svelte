@@ -2,7 +2,9 @@
 	import { onMount } from 'svelte';
 	import googleService from '$lib/services/google.service';
 	import { calendarEvents } from '$lib/stores/calendarEvents.store';
-	import { CALENDAR_EVENTS_LOCAL_STORAGE_KEY } from '../types/enums';
+	import { CAL_EVENTS_LOCALSTORAGE_KEY } from '../types/enums';
+	import MonthView from '$lib/components/MonthView.svelte';
+	import type { GoogleCalendarEvent } from '../types/google';
 
 	let loaded = $state(false);
 
@@ -11,23 +13,19 @@
 	}
 
 	function loadFromLocalStorage() {
-		const storedEvents = localStorage.getItem(CALENDAR_EVENTS_LOCAL_STORAGE_KEY);
-
+		const storedEvents = localStorage.getItem(CAL_EVENTS_LOCALSTORAGE_KEY);
 		const parsed = JSON.parse(storedEvents || '');
-		if (parsed) {
+
+		if (!!parsed && Array.isArray(parsed)) {
+			const map = new Map(parsed) as Map<string, GoogleCalendarEvent[]>;
 			calendarEvents.clear();
-			calendarEvents.add(parsed);
+			calendarEvents.set(map);
 		}
 	}
 
 	function clear() {
-		localStorage.setItem(CALENDAR_EVENTS_LOCAL_STORAGE_KEY, JSON.stringify([]));
+		localStorage.setItem(CAL_EVENTS_LOCALSTORAGE_KEY, JSON.stringify({}));
 		calendarEvents.clear();
-	}
-
-	function parseDate(item: { dateTime?: string; date?: string }) {
-		if (!!item.dateTime) return new Date(item.dateTime).toDateString();
-		else if (!!item.date) return new Date(item.date).toDateString();
 	}
 
 	onMount(async () => {
@@ -37,33 +35,12 @@
 	});
 </script>
 
-Get user calendar data
-<br />
-
 {#if loaded}
 	<button class="border p-2 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
 {/if}
 
 <button class="border p-2 hover:cursor-pointer" onclick={clear}>clear</button>
 
-<div class="mt-2 grid grid-cols-5 gap-2">
-	{#each $calendarEvents as event}
-		<a href={event.htmlLink} target="_blank">
-			<div class="border p-1 text-left hover:cursor-pointer hover:bg-black hover:text-white">
-				<div class="">{event.eventType}</div>
+<div class="mt-2"></div>
 
-				<div class="flex justify-between">
-					<div>Start:</div>
-					<div>{parseDate(event.start)}</div>
-				</div>
-				<div class="flex justify-between">
-					<div>End:</div>
-					<div>{parseDate(event.end)}</div>
-				</div>
-
-				<hr />
-				<div class="mt-1 text-left">{event.summary}</div>
-			</div>
-		</a>
-	{/each}
-</div>
+<MonthView />

@@ -1,1 +1,1 @@
-export const CALENDAR_EVENTS_LOCAL_STORAGE_KEY = "google_events:store"
+export const CAL_EVENTS_LOCALSTORAGE_KEY = "google_events:store"

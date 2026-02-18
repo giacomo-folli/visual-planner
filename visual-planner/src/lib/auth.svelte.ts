@@ -1,90 +1,77 @@
-import type { TokenResponse, TokenClient } from '../types/google-gis';
+import { GOOGLE_SCOPES, googleAuth } from './google-auth';
 
 class AuthService {
-    token = $state<string | null>(null);
-    user = $state<{ name: string; email: string } | null>(null);
-    isInitialized = $state(false);
-    private tokenClient: TokenClient | null = null;
+	token = $state<string | null>(null);
+	user = $state<{ name: string; email: string } | null>(null);
+	isInitialized = $state(false);
 
-    get isAuthenticated(): boolean {
-        return this.token !== null;
-    }
+	get isAuthenticated(): boolean {
+		return this.token !== null;
+	}
 
-    init(): void {
-        if (typeof window === 'undefined' || !window.google?.accounts?.oauth2) {
-            console.warn('Google Identity Services not loaded');
-            return;
-        }
+	init(): void {
+		if (typeof window === 'undefined' || !window.google?.accounts?.oauth2) {
+			console.warn('Google Identity Services not loaded');
+			return;
+		}
 
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+		this.isInitialized = true;
+	}
 
-        this.tokenClient = window.google.accounts.oauth2.initTokenClient({
-            client_id: clientId,
-            scope: 'https://www.googleapis.com/auth/calendar.readonly',
-            callback: (response: TokenResponse) => {
-                if (response.access_token) {
-                    this.token = response.access_token;
-                    // @ts-expect-error - gapi client is available globally when loaded
-                    if (typeof gapi !== 'undefined' && gapi.client?.setToken) {
-                        // @ts-expect-error - gapi client is available globally when loaded
-                        gapi.client.setToken({ access_token: response.access_token });
-                    }
-                    this.fetchUserInfo();
-                } else if (response.error) {
-                    console.error('Auth error:', response.error, response.error_description);
-                }
-            },
-        });
+	async login(): Promise<void> {
+		if (!this.isInitialized) {
+			this.init();
+		}
 
-        this.isInitialized = true;
-    }
+		try {
+			const response = await googleAuth.requestAccessToken({
+				interactive: true,
+				scopes: [GOOGLE_SCOPES.CALENDAR_READONLY, GOOGLE_SCOPES.DRIVE_APPDATA]
+			});
+			this.token = response.access_token;
+			await this.fetchUserInfo();
+		} catch (error) {
+			console.error('Auth error:', error);
+		}
+	}
 
-    login(): void {
-        if (!this.tokenClient) {
-            this.init();
-        }
-        this.tokenClient?.requestAccessToken({ prompt: 'consent' });
-    }
+	logout(): void {
+		if (this.token) {
+			googleAuth.revoke(this.token, () => {
+				this.token = null;
+				this.user = null;
+			});
+			return;
+		}
 
-    logout(): void {
-        if (this.token) {
-            window.google?.accounts?.oauth2.revoke(this.token, () => {
-                this.token = null;
-                this.user = null;
-                console.log('Token revoked');
-            });
-        } else {
-            this.token = null;
-            this.user = null;
-        }
-    }
+		this.token = null;
+		this.user = null;
+	}
 
-    private async fetchUserInfo(): Promise<void> {
-        if (!this.token) return;
+	private async fetchUserInfo(): Promise<void> {
+		if (!this.token) return;
 
-        try {
-            // @ts-expect-error - gapi client may not be loaded
-            if (typeof gapi === 'undefined' || !gapi.client?.oauth2) {
-                this.user = { name: 'User', email: '' };
-                return;
-            }
-            // @ts-expect-error - gapi client is available globally when loaded
-            const response = await gapi.client.oauth2.userinfo.get();
+		try {
+			const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+				headers: {
+					Authorization: `Bearer ${this.token}`
+				}
+			});
 
-            if (response.result) {
-                this.user = {
-                    name: response.result.name || 'User',
-                    email: response.result.email || '',
-                };
-            } else {
-                console.error('Failed to fetch user info: no result');
-                this.user = { name: 'User', email: '' };
-            }
-        } catch (error) {
-            console.error('Failed to fetch user info:', error);
-            this.user = { name: 'User', email: '' };
-        }
-    }
+			if (!response.ok) {
+				throw new Error(`Unable to fetch user profile (${response.status})`);
+			}
+
+			const profile = (await response.json()) as { name?: string; email?: string };
+			this.user = {
+				name: profile.name || 'User',
+				email: profile.email || ''
+			};
+		} catch (error) {
+			console.error('Failed to fetch user info:', error);
+			this.user = { name: 'User', email: '' };
+		}
+	}
 }
 
 export const auth = new AuthService();

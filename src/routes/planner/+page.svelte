@@ -1,229 +1,214 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import './page.css';
-	import {
-		defaultAppData,
-		loadGridView,
-		setGridView,
-		VpConfiguration,
-		VpGCal,
-		VpDiary,
-		VpGrid,
-		type AppData,
-		type GridViewState,
-		type Permissions,
-		type GridState,
-		type VpMonth
-	} from '$lib/index';
-	import SettingsView from '$lib/components/SettingsView.svelte';
+	import '../../app.css';
+	
+	// // Reactive state
+	// let uiView = $state<'planner' | 'settings'>('planner');
+	// let formDirty = $state(false);
 
-	// Reactive state
-	let uiView = $state<'planner' | 'settings'>('planner');
-	let formDirty = $state(false);
+	// // appdata is mutated in-place by VpConfiguration, so we wrap the
+	// // same object reference in $state so Svelte tracks its properties.
+	// let appdata = $state<AppData>({ ...defaultAppData });
 
-	// appdata is mutated in-place by VpConfiguration, so we wrap the
-	// same object reference in $state so Svelte tracks its properties.
-	let appdata = $state<AppData>({ ...defaultAppData });
+	// // Snapshot taken when settings panel opens, used to revert on cancel.
+	// let appdataSnapshot: AppData = { ...appdata };
 
-	// Snapshot taken when settings panel opens, used to revert on cancel.
-	let appdataSnapshot: AppData = { ...appdata };
+	// let permissions = $state<Permissions>({
+	// 	view_calendars: false,
+	// 	drive_appdata: false
+	// });
 
-	let permissions = $state<Permissions>({
-		view_calendars: false,
-		drive_appdata: false
-	});
+	// let gridview = $state<GridViewState>(loadGridView());
 
-	let gridview = $state<GridViewState>(loadGridView());
+	// // Grid display state driven by VpGrid
+	// let gridState = $state<GridState>({
+	// 	fontscale: 1,
+	// 	past_opacity: 0.6,
+	// 	scroll_size: 100,
+	// 	scroll_size_portrait: 200,
+	// 	singledaytext: true,
+	// 	multidaytext: true,
+	// 	multidayscale: 1,
+	// 	cls: {},
+	// 	sbox_cls: {},
+	// 	page: [] as VpMonth[],
+	// 	gridareas: '',
+	// 	year: new Date().getFullYear()
+	// });
 
-	// Grid display state driven by VpGrid
-	let gridState = $state<GridState>({
-		fontscale: 1,
-		past_opacity: 0.6,
-		scroll_size: 100,
-		scroll_size_portrait: 200,
-		singledaytext: true,
-		multidaytext: true,
-		multidayscale: 1,
-		cls: {},
-		sbox_cls: {},
-		page: [] as VpMonth[],
-		gridareas: '',
-		year: new Date().getFullYear()
-	});
+	// // Service instances (initialised in onMount)
+	// let vpConfig: VpConfiguration;
+	// let vpGCal: VpGCal;
+	// let vpDiary: VpDiary;
+	// let vpGrid: VpGrid;
 
-	// Service instances (initialised in onMount)
-	let vpConfig: VpConfiguration;
-	let vpGCal: VpGCal;
-	let vpDiary: VpDiary;
-	let vpGrid: VpGrid;
+	// // DOM refs
+	// let scrollboxEl = $state<HTMLElement | null>(null);
+	// let boxEl = $state<HTMLElement | null>(null);
+	// let navbarEl = $state<HTMLElement | null>(null);
 
-	// DOM refs
-	let scrollboxEl = $state<HTMLElement | null>(null);
-	let boxEl = $state<HTMLElement | null>(null);
-	let navbarEl = $state<HTMLElement | null>(null);
+	// // Derived
+	// let darkmode = $derived(!!gridview.darkmode);
 
-	// Derived
-	let darkmode = $derived(!!gridview.darkmode);
+	// type VpPrintPayload = {
+	// 	gridview: GridViewState;
+	// 	calendarlist: VpGCal['calendarlist'];
+	// 	grid: GridState & { page: VpMonth[] };
+	// };
 
-	type VpPrintPayload = {
-		gridview: GridViewState;
-		calendarlist: VpGCal['calendarlist'];
-		grid: GridState & { page: VpMonth[] };
-	};
+	// // Lifecycle
 
-	// Lifecycle
+	// async function waitForGoogleClient(timeoutMs = 5000, intervalMs = 50): Promise<boolean> {
+	// 	if (typeof window === 'undefined') return false;
 
-	async function waitForGoogleClient(timeoutMs = 5000, intervalMs = 50): Promise<boolean> {
-		if (typeof window === 'undefined') return false;
+	// 	const hasGapiLoad = () => typeof gapi !== 'undefined' && typeof gapi.load === 'function';
+	// 	if (hasGapiLoad()) return true;
 
-		const hasGapiLoad = () => typeof gapi !== 'undefined' && typeof gapi.load === 'function';
-		if (hasGapiLoad()) return true;
+	// 	const deadline = Date.now() + timeoutMs;
+	// 	while (Date.now() < deadline) {
+	// 		await new Promise((resolve) => setTimeout(resolve, intervalMs));
+	// 		if (hasGapiLoad()) return true;
+	// 	}
 
-		const deadline = Date.now() + timeoutMs;
-		while (Date.now() < deadline) {
-			await new Promise((resolve) => setTimeout(resolve, intervalMs));
-			if (hasGapiLoad()) return true;
-		}
+	// 	return false;
+	// }
 
-		return false;
-	}
+	// onMount(async () => {
+	// 	vpConfig = new VpConfiguration(permissions, appdata);
+	// 	vpGCal = new VpGCal(appdata);
+	// 	vpDiary = new VpDiary(appdata, gridview, vpGCal);
+	// 	vpGrid = new VpGrid(appdata, gridview, vpDiary, vpConfig);
 
-	onMount(async () => {
-		vpConfig = new VpConfiguration(permissions, appdata);
-		vpGCal = new VpGCal(appdata);
-		vpDiary = new VpDiary(appdata, gridview, vpGCal);
-		vpGrid = new VpGrid(appdata, gridview, vpDiary, vpConfig);
+	// 	// Keep Svelte gridState in sync whenever VpGrid updates it
+	// 	vpGrid.onUpdate = () => {
+	// 		Object.assign(gridState, vpGrid.state);
+	// 	};
 
-		// Keep Svelte gridState in sync whenever VpGrid updates it
-		vpGrid.onUpdate = () => {
-			Object.assign(gridState, vpGrid.state);
-		};
+	// 	// After a page load, scroll the grid to the correct month
+	// 	vpGrid.onPageLoaded = (buffer: number) => {
+	// 		if (!scrollboxEl || !boxEl) return;
+	// 		const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
+	// 		if (!monthdivs.length) return;
+	// 		const hdr = monthdivs[buffer]?.firstElementChild as HTMLElement | null;
+	// 		if (!hdr) return;
+	// 		if (gridview.column) scrollboxEl.scrollTo(hdr.offsetLeft, 0);
+	// 		if (gridview.list) scrollboxEl.scrollTo(0, hdr.offsetTop);
+	// 		boxEl.focus();
+	// 	};
 
-		// After a page load, scroll the grid to the correct month
-		vpGrid.onPageLoaded = (buffer: number) => {
-			if (!scrollboxEl || !boxEl) return;
-			const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
-			if (!monthdivs.length) return;
-			const hdr = monthdivs[buffer]?.firstElementChild as HTMLElement | null;
-			if (!hdr) return;
-			if (gridview.column) scrollboxEl.scrollTo(hdr.offsetLeft, 0);
-			if (gridview.list) scrollboxEl.scrollTo(0, hdr.offsetTop);
-			boxEl.focus();
-		};
+	// 	// Once calendarlist is ready, start the grid
+	// 	vpGCal.onLoad = () => {
+	// 		vpGrid.start();
+	// 	};
 
-		// Once calendarlist is ready, start the grid
-		vpGCal.onLoad = () => {
-			vpGrid.start();
-		};
+	// 	// Once permissions + appdata are loaded, init gcal
+	// 	vpConfig.onLoad.push(() => {
+	// 		vpGCal.init(permissions);
+	// 	});
 
-		// Once permissions + appdata are loaded, init gcal
-		vpConfig.onLoad.push(() => {
-			vpGCal.init(permissions);
-		});
+	// 	// Boot: wait for Google API script, then kick off auth + config
+	// 	const hasGoogleClient = await waitForGoogleClient();
+	// 	if (!hasGoogleClient) {
+	// 		console.error('Google API client failed to load.');
+	// 		return;
+	// 	}
 
-		// Boot: wait for Google API script, then kick off auth + config
-		const hasGoogleClient = await waitForGoogleClient();
-		if (!hasGoogleClient) {
-			console.error('Google API client failed to load.');
-			return;
-		}
+	// 	gapi.load('client', () => vpConfig.load());
+	// });
 
-		gapi.load('client', () => vpConfig.load());
-	});
+	// // Settings handlers
+	// function openSettings() {
+	// 	appdataSnapshot = { ...appdata };
+	// 	formDirty = false;
+	// 	uiView = 'settings';
+	// }
 
-	// Settings handlers
-	function openSettings() {
-		appdataSnapshot = { ...appdata };
-		formDirty = false;
-		uiView = 'settings';
-	}
+	// function cancelSettings() {
+	// 	vpConfig.revertAppdata();
+	// 	// Reflect the revert into our $state proxy
+	// 	Object.assign(appdata, appdataSnapshot);
+	// 	formDirty = false;
+	// 	uiView = 'planner';
+	// }
 
-	function cancelSettings() {
-		vpConfig.revertAppdata();
-		// Reflect the revert into our $state proxy
-		Object.assign(appdata, appdataSnapshot);
-		formDirty = false;
-		uiView = 'planner';
-	}
+	// function saveSettings() {
+	// 	vpConfig.saveAppData();
+	// 	vpGrid.reset();
+	// 	formDirty = false;
+	// 	uiView = 'planner';
+	// }
 
-	function saveSettings() {
-		vpConfig.saveAppData();
-		vpGrid.reset();
-		formDirty = false;
-		uiView = 'planner';
-	}
+	// function markDirty() {
+	// 	formDirty = true;
+	// }
 
-	function markDirty() {
-		formDirty = true;
-	}
+	// // Toolbar handlers
+	// function onclickColumn() {
+	// 	if (gridview.column) return;
+	// 	gridview = setGridView(gridview, { column: true });
+	// 	vpGrid.reset();
+	// }
 
-	// Toolbar handlers
-	function onclickColumn() {
-		if (gridview.column) return;
-		gridview = setGridView(gridview, { column: true });
-		vpGrid.reset();
-	}
+	// function onclickList() {
+	// 	if (gridview.list) return;
+	// 	gridview = setGridView(gridview, { list: true });
+	// 	vpGrid.reset();
+	// }
 
-	function onclickList() {
-		if (gridview.list) return;
-		gridview = setGridView(gridview, { list: true });
-		vpGrid.reset();
-	}
+	// function onclickExpand() {
+	// 	gridview = vpGrid.onclickExpand(gridview);
+	// }
 
-	function onclickExpand() {
-		gridview = vpGrid.onclickExpand(gridview);
-	}
+	// function onclickDarkMode() {
+	// 	gridview = vpGrid.onclickDarkMode(gridview);
+	// }
 
-	function onclickDarkMode() {
-		gridview = vpGrid.onclickDarkMode(gridview);
-	}
+	// function onclickSync() {
+	// 	vpDiary?.sync();
+	// 	boxEl?.focus();
+	// }
 
-	function onclickSync() {
-		vpDiary?.sync();
-		boxEl?.focus();
-	}
+	// function onclickContinue() {
+	// 	if (!scrollboxEl || !boxEl) return;
+	// 	const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
+	// 	vpGrid.onclickContinue(scrollboxEl, monthdivs);
+	// 	boxEl.focus();
+	// }
 
-	function onclickContinue() {
-		if (!scrollboxEl || !boxEl) return;
-		const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
-		vpGrid.onclickContinue(scrollboxEl, monthdivs);
-		boxEl.focus();
-	}
+	// function onclickPrint() {
+	// 	if (!scrollboxEl || !boxEl) return;
+	// 	const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
+	// 	const visinfo = vpGrid.getVisInfo(scrollboxEl, monthdivs);
+	// 	// Expose for vpprint.htm (matching original behaviour)
+	// 	(window as Window & { vpprint?: VpPrintPayload }).vpprint = {
+	// 		gridview,
+	// 		calendarlist: vpGCal.calendarlist,
+	// 		grid: { ...gridState, page: visinfo.months }
+	// 	};
+	// 	window.open('vpprint.htm');
+	// }
 
-	function onclickPrint() {
-		if (!scrollboxEl || !boxEl) return;
-		const monthdivs = boxEl.querySelectorAll<HTMLElement>('.vpmonth');
-		const visinfo = vpGrid.getVisInfo(scrollboxEl, monthdivs);
-		// Expose for vpprint.htm (matching original behaviour)
-		(window as Window & { vpprint?: VpPrintPayload }).vpprint = {
-			gridview,
-			calendarlist: vpGCal.calendarlist,
-			grid: { ...gridState, page: visinfo.months }
-		};
-		window.open('vpprint.htm');
-	}
+	// function onclickNavbar(evt: MouseEvent) {
+	// 	if (!navbarEl) return;
+	// 	vpGrid.onclickNavbar(evt.clientX, navbarEl.offsetWidth);
+	// }
 
-	function onclickNavbar(evt: MouseEvent) {
-		if (!navbarEl) return;
-		vpGrid.onclickNavbar(evt.clientX, navbarEl.offsetWidth);
-	}
+	// function onkeydown(evt: KeyboardEvent) {
+	// 	if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
+	// 	if (evt.key === 'Enter') {
+	// 		evt.preventDefault();
+	// 		onclickContinue();
+	// 	}
+	// }
 
-	function onkeydown(evt: KeyboardEvent) {
-		if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
-		if (evt.key === 'Enter') {
-			evt.preventDefault();
-			onclickContinue();
-		}
-	}
-
-	function onWheel(evt: WheelEvent) {
-		if (!scrollboxEl) return;
-		vpGrid.onWheel(evt, scrollboxEl);
-	}
+	// function onWheel(evt: WheelEvent) {
+	// 	if (!scrollboxEl) return;
+	// 	vpGrid.onWheel(evt, scrollboxEl);
+	// }
 </script>
 
 <svelte:head>
-	<title>{appdata.title}</title>
+	<!-- <title>{appdata.title}</title> -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Material+Icons&display=swap"

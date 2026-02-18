@@ -1,49 +1,25 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<script src="https://accounts.google.com/gsi/client" async defer></script>
-		%sveltekit.head%
 
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta
-			name="description"
-			content="Year-view planner for your Google Calendar events. Free and open-source."
-		/>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- <meta name="google-site-verification" content="opI-WEBlK2jop1tsX3bOa5eD8lj_J70Ybqag-j8gPgc" /> -->
-		<meta name="google-site-verification" content="972417936438-2ab6hkavhkuq4e0l21343nlhfjulbuld" />
-		<!-- <link rel="icon" href="vp.png"> -->
-		<link
-			rel="stylesheet"
-			type="text/css"
-			href="https://fonts.googleapis.com/css?family=Material+Icons"
-		/>
-		<title>visual-planner | Google Calendar Year View</title>
-		<style>
-			body {
-				margin: 2em;
-			}
+	%sveltekit.head%
 
-			a {
-				text-decoration: none;
-				color: #3f67dd;
-			}
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="description" content="Year-view planner for your Google Calendar events. Free and open-source." />
 
-			h4 {
-				padding-top: 1em;
-			}
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Material+Icons" />
 
-			.material-icons {
-				font-size: 1em;
-				vertical-align: sub;
-				padding-right: 0.5em;
-			}
-		</style>
-	</head>
+	<!-- Caricare libreria google -->
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+	<title>visual-planner | Google Calendar Year View</title>
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>

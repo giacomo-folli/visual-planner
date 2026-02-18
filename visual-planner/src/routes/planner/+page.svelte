@@ -72,7 +72,23 @@
 	};
 
 	// Lifecycle
-	onMount(() => {
+
+	async function waitForGoogleClient(timeoutMs = 5000, intervalMs = 50): Promise<boolean> {
+		if (typeof window === 'undefined') return false;
+
+		const hasGapiLoad = () => typeof gapi !== 'undefined' && typeof gapi.load === 'function';
+		if (hasGapiLoad()) return true;
+
+		const deadline = Date.now() + timeoutMs;
+		while (Date.now() < deadline) {
+			await new Promise((resolve) => setTimeout(resolve, intervalMs));
+			if (hasGapiLoad()) return true;
+		}
+
+		return false;
+	}
+
+	onMount(async () => {
 		vpConfig = new VpConfiguration(permissions, appdata);
 		vpGCal = new VpGCal(appdata);
 		vpDiary = new VpDiary(appdata, gridview, vpGCal);
@@ -105,7 +121,13 @@
 			vpGCal.init(permissions);
 		});
 
-		// Boot: load google client then kick off auth + config
+		// Boot: wait for Google API script, then kick off auth + config
+		const hasGoogleClient = await waitForGoogleClient();
+		if (!hasGoogleClient) {
+			console.error('Google API client failed to load.');
+			return;
+		}
+
 		gapi.load('client', () => vpConfig.load());
 	});
 

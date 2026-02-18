@@ -1,4 +1,4 @@
-import { GOOGLE_SCOPES, googleAuth } from './google-auth';
+import { googleAuth } from './google-auth';
 
 class AuthService {
 	token = $state<string | null>(null);
@@ -25,8 +25,7 @@ class AuthService {
 
 		try {
 			const response = await googleAuth.requestAccessToken({
-				interactive: true,
-				scopes: [GOOGLE_SCOPES.CALENDAR_READONLY, GOOGLE_SCOPES.DRIVE_APPDATA]
+				interactive: true
 			});
 			this.token = response.access_token;
 			await this.fetchUserInfo();

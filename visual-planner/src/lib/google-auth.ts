@@ -2,10 +2,19 @@ import type { TokenClient, TokenResponse } from '../types/google-gis';
 
 export const GOOGLE_SCOPES = {
 	CALENDAR_READONLY: 'https://www.googleapis.com/auth/calendar.readonly',
-	DRIVE_APPDATA: 'https://www.googleapis.com/auth/drive.appdata'
+	DRIVE_APPDATA: 'https://www.googleapis.com/auth/drive.appdata',
+	OPENID: 'openid',
+	USERINFO_EMAIL: 'https://www.googleapis.com/auth/userinfo.email',
+	USERINFO_PROFILE: 'https://www.googleapis.com/auth/userinfo.profile'
 } as const;
 
-const DEFAULT_SCOPES = [GOOGLE_SCOPES.CALENDAR_READONLY, GOOGLE_SCOPES.DRIVE_APPDATA];
+const DEFAULT_SCOPES = [
+	GOOGLE_SCOPES.CALENDAR_READONLY,
+	GOOGLE_SCOPES.DRIVE_APPDATA,
+	GOOGLE_SCOPES.OPENID,
+	GOOGLE_SCOPES.USERINFO_EMAIL,
+	GOOGLE_SCOPES.USERINFO_PROFILE
+];
 
 type RequestOptions = {
 	scopes?: string[];

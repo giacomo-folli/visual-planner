@@ -1,21 +1,5 @@
 # TASKS.md
 
-## 1. Project Scaffolding & Configuration
-
-* [ ] **Initialize Vite + Svelte:** Create a new Vite project using the Svelte-TS template.
-* *Constraint:* Ensure `svelte` version is `^5.0.0` (or `next`) in `package.json`.
-
-
-* [ ] **Install & Configure Tailwind CSS:** Install `tailwindcss`, `postcss`, and `autoprefixer`. Generate `tailwind.config.ts` and `postcss.config.js`.
-* *Action:* Add standard Tailwind directives to `src/assets/app.css`.
-
-
-* [ ] **Clean Boilerplate:** Remove `Counter.svelte` and default assets. Create a clean `App.svelte` that simply renders "Visual Planner Loaded".
-* [ ] **Environment Setup:** Create a `.env` file for `VITE_GOOGLE_CLIENT_ID`.
-* *Verification:* Run `npm run dev` and ensure the text "Visual Planner Loaded" appears with Tailwind utility styles applied (e.g., `<h1 class="text-3xl font-bold">`).
-
-
-
 ## 2. Authentication (Google Identity Services)
 
 * [ ] **Type Definitions:** Create `src/types/google-gis.d.ts`.

@@ -2,12 +2,14 @@
 
 ## Project Goal
 
-Refactor the legacy `Visual-Planner` into a modern **Svelte 5**, **TypeScript**, and **Tailwind CSS** application. The app will visualize Google Calendar events in a continuous vertical or horizontal year view.
+Refactor the legacy `legacy-visual-planner` into a modern **Svelte 5**, **TypeScript**, into `visual-planner`. The app will visualize Google Calendar events in a continuous vertical or horizontal year view.
 
 ## 1. Tech Stack & Constraints
 
 * **Framework:** Svelte 5 (Vite).
-* **Reactivity:** **Strict Runes mode**. Use `$state`, `$derived`, `$effect`, and `$props`. **Do NOT** use `export let` or `$:`.
+* **Reactivity:** **Strict Runes mode**. Use `$state`, `$derived`, `$effect`, and `$props`. 
+* **Do NOT** use `export let` or `$:`.
+* **Use shared common app state**
 * **Language:** TypeScript (Strict mode).
 * **Styling:** Tailwind CSS.
 * **Auth:** Google Identity Services (GIS) - "Token Model" (for client-side apps).
@@ -17,11 +19,7 @@ Refactor the legacy `Visual-Planner` into a modern **Svelte 5**, **TypeScript**,
 
 ```text
 visual-planner/
-├── public/
-│   └── index.html             // Loads GIS script (https://accounts.google.com/gsi/client)
 ├── src/
-│   ├── assets/
-│   │   └── app.css            // Tailwind directives
 │   ├── components/
 │   │   ├── layout/
 │   │   │   └── Header.svelte      // Controls (Auth status, View toggles)
@@ -38,9 +36,9 @@ visual-planner/
 │   ├── types/
 │   │   ├── google-gis.d.ts        // Type definitions for google.accounts.oauth2
 │   │   └── events.ts              // Interfaces for CalendarEvent, API responses
-│   ├── App.svelte                 // Root: Handles Auth Guard & Layout
+│   ├── app.html
+│   │── app.css            // Tailwind directives
 │   └── main.ts
-
 ```
 
 ## 3. Implementation Details
@@ -74,7 +72,7 @@ Since we have the `access_token`, we will use standard `fetch` to get events. Th
 * Use a class `CalendarManager`.
 * `events = $state<CalendarEvent[]>([])`
 * `viewMode = $state<'list' | 'column'>('column')`
-* `filteredEvents = $derived(...)` -> filters events based on search/config.
+* `filteredEvenwts = $derived(...)` -> filters events based on search/config.
 * **Optimization:** The Year View can be heavy. Use `$derived` to group events by Month/Day efficiently so the UI only iterates over pre-grouped data.
 
 ### D. Component Architecture

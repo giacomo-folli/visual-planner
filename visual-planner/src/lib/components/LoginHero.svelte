@@ -1,8 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { auth } from '$lib/auth.svelte';
 
-	function handleLogin() {
-		auth.login();
+	async function handleLogin() {
+		await auth.login();
+
+		if (auth.isAuthenticated) {
+			await goto('/planner');
+		}
 	}
 </script>
 

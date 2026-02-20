@@ -1,6 +1,7 @@
 import { writable, type Subscriber, type Unsubscriber } from 'svelte/store';
 import type { GoogleCalendarEvent } from '../../types/google';
 import { CAL_EVENTS_LOCALSTORAGE_KEY } from '../../types/enums';
+import { DateTime } from 'luxon';
 
 type CalendarStoreObject = Map<string, GoogleCalendarEvent[]>
 
@@ -25,16 +26,32 @@ function createCalendarEventStore(): CalendarEventStore {
                 events.clear()
                 if (!Array.isArray(newEvents)) return events
 
+                // Simple temp function to format DateTime obj
+                const f = (d: DateTime): string => d.toFormat('yyyy-LL-dd')
+
                 // Populate with new data
                 for (const e of newEvents) {
                     if (!e.start.date && !e.start.dateTime) continue
 
-                    const date = e.start?.date || e.start.dateTime.split('T')[0]
-                    if (events.has(date)) {
-                        const dayEvents = events.get(date) || []
-                        events.set(date, dayEvents.concat(e))
+                    const start = e.start?.date
+                        ? DateTime.fromISO(e.start.date)
+                        : DateTime.fromISO(e.start?.dateTime)
+                    const end = e.end?.date
+                        ? DateTime.fromISO(e.end.date)
+                        : DateTime.fromISO(e.end?.dateTime)
+
+                    if (!start) throw new Error("No start date!")
+
+                    if (!end || f(start) == f(end)) {
+                        const dayEvents = events.get(f(start)) || []
+                        events.set(f(start), dayEvents.concat(e))
                     } else {
-                        events.set(date, [e])
+                        const diff = end.diff(start).as('days') - 1
+                        for (let i = 0; i < diff; i++) {
+                            const currDay = f(start.plus({ days: i }))
+                            const dayEvents = events.get(currDay) || []
+                            events.set(currDay, dayEvents.concat(e))
+                        }
                     }
                 }
 

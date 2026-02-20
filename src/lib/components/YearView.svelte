@@ -5,29 +5,24 @@
 	let currentDate = $state(new Date());
 	let viewDate = $state(new Date());
 
-	const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+	const weekDayAbbrevs: Record<number, string> = {
+		0: 'Su',
+		1: 'M',
+		2: 'Tu',
+		3: 'W',
+		4: 'Th',
+		5: 'F',
+		6: 'Sa'
+	};
+
 	const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 	function getDaysInMonth(year: number, month: number): Date[] {
-		const firstDay = new Date(year, month, 1);
 		const lastDay = new Date(year, month + 1, 0);
 		const days: Date[] = [];
-
-		const startDayOfWeek = firstDay.getDay();
-		for (let i = startDayOfWeek - 1; i >= 0; i--) {
-			const d = new Date(year, month, -i);
-			days.push(d);
-		}
-
 		for (let i = 1; i <= lastDay.getDate(); i++) {
 			days.push(new Date(year, month, i));
 		}
-
-		const endDayOfWeek = lastDay.getDay();
-		for (let i = 1; i < 7 - endDayOfWeek; i++) {
-			days.push(new Date(year, month + 1, i));
-		}
-
 		return days;
 	}
 
@@ -48,8 +43,8 @@
 		);
 	}
 
-	function isCurrentMonth(date: Date, month: number): boolean {
-		return date.getMonth() === month;
+	function isWeekend(date: Date): boolean {
+		return date.getDay() === 0 || date.getDay() === 6;
 	}
 
 	function prevYear() {
@@ -60,174 +55,200 @@
 		viewDate = new Date(viewDate.getFullYear() + 1, viewDate.getMonth(), 1);
 	}
 
-	function formatTime(date: Date): string {
-		return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	}
-
 	let year = $derived(viewDate.getFullYear());
-	let yearName = $derived(viewDate.toLocaleDateString('en-US', { year: 'numeric' }));
 
 	function getMonthName(month: number): string {
-		return new Date(year, month, 1).toLocaleDateString('en-US', { month: 'short' });
+		return new Date(year, month, 1).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 	}
 </script>
 
 <div class="year-view">
 	<div class="header">
-		<button onclick={prevYear}>&lt;</button>
-		<h2>{yearName}</h2>
-		<button onclick={nextYear}>&gt;</button>
+		<button onclick={prevYear} class="nav-btn">&lsaquo;</button>
+		<h1 class="year-title">{year}</h1>
+		<button onclick={nextYear} class="nav-btn">&rsaquo;</button>
 	</div>
 
-	<div class="months-grid">
-		{#each months as month}
-			{@const monthDays = getDaysInMonth(year, month)}
-			{@const monthName = getMonthName(month)}
-			<div class="month">
-				<div class="month-header">
-					<h3>{monthName}</h3>
-				</div>
-				<div class="weekdays">
-					{#each weekDays as day}
-						<div class="weekday">{day}</div>
-					{/each}
-				</div>
-				<div class="days">
-					{#each monthDays as day}
-						{@const events = getEventsForDate(day)}
-						<div
-							class="day"
-							class:other-month={!isCurrentMonth(day, month)}
-							class:today={isToday(day)}
-						>
-							<span class="day-number">{day.getDate()}</span>
-							{#if events.length > 0}
-								<div class="events-indicator" title={events.map((e) => e.summary).join(', ')}>
-									{#if events.length <= 3}
-										{#each events as event}
+	<div class="calendar-grid">
+		<!-- Month headers -->
+		<div class="months-row">
+			{#each months as month}
+				<div class="month-col">
+					<div class="month-header">{getMonthName(month)}</div>
+					<div class="days-col">
+						{#each getDaysInMonth(year, month) as day}
+							{@const events = getEventsForDate(day)}
+							{@const dayOfWeek = day.getDay()}
+							<div
+								class="day-row"
+								class:weekend={isWeekend(day)}
+								class:today={isToday(day)}
+								class:has-events={events.length > 0}
+							>
+								<span class="day-number">{day.getDate()}</span>
+								<span class="day-abbrev">{weekDayAbbrevs[dayOfWeek]}</span>
+								{#if events.length > 0}
+									<div class="event-dots">
+										{#each events.slice(0, 3) as event}
 											<div class="event-dot" title={event.summary}></div>
 										{/each}
-									{:else}
-										<div class="event-dot" title="{events.length} events"></div>
-									{/if}
-								</div>
-							{/if}
-						</div>
-					{/each}
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		</div>
 	</div>
 </div>
 
 <style>
+	@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Archivo+Narrow:wght@400;500;600&display=swap');
+
 	.year-view {
-		padding: 1rem;
-		height: 100%;
+		font-family: 'Archivo Narrow', sans-serif;
+		background: #fff;
+		padding: 1.5rem 1rem 1rem;
+		min-height: 100%;
 		overflow: auto;
+		color: #222;
 	}
 
 	.header {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
-		margin-bottom: 1rem;
+		gap: 1.5rem;
+		margin-bottom: 1.25rem;
+		border-bottom: 2px solid #111;
+		padding-bottom: 0.5rem;
 	}
 
-	.header button {
+	.year-title {
+		font-family: 'EB Garamond', serif;
+		font-size: 2rem;
+		font-weight: 400;
+		letter-spacing: 0.15em;
+		margin: 0;
+		color: #111;
+	}
+
+	.nav-btn {
 		background: none;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		padding: 0.25rem 0.75rem;
+		border: none;
+		font-size: 1.5rem;
 		cursor: pointer;
+		color: #555;
+		padding: 0.1rem 0.4rem;
+		line-height: 1;
 	}
 
-	.header button:hover {
-		background: #f0f0f0;
+	.nav-btn:hover {
+		color: #000;
 	}
 
-	.months-grid {
+	.calendar-grid {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	.months-row {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 1rem;
+		grid-template-columns: repeat(12, 1fr);
+		gap: 0;
+		min-width: 900px;
 	}
 
-	.month {
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		padding: 0.5rem;
-		background: #fff;
+	.month-col {
+		border-right: 1px solid #ddd;
+	}
+
+	.month-col:last-child {
+		border-right: none;
 	}
 
 	.month-header {
 		text-align: center;
-		margin-bottom: 0.5rem;
-	}
-
-	.month-header h3 {
-		margin: 0;
-		font-size: 0.9rem;
+		font-size: 0.6rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
 		color: #333;
+		padding: 0.3rem 0.2rem 0.4rem;
+		border-bottom: 1px solid #bbb;
+		text-transform: uppercase;
 	}
 
-	.weekdays {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 1px;
-		margin-bottom: 0.25rem;
+	.days-col {
+		display: flex;
+		flex-direction: column;
 	}
 
-	.weekday {
-		text-align: center;
-		font-size: 0.65rem;
-		color: #666;
-		font-weight: 500;
-	}
-
-	.days {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 1px;
-	}
-
-	.day {
-		aspect-ratio: 1;
-		padding: 0.1rem;
-		font-size: 0.7rem;
+	.day-row {
+		display: flex;
+		align-items: center;
+		padding: 0.08rem 0.3rem;
+		gap: 0.2rem;
+		border-bottom: 1px solid #eee;
+		min-height: 18px;
 		position: relative;
-		border: 1px solid transparent;
 	}
 
-	.day:hover {
-		background: #f9f9f9;
+	.day-row:hover {
+		background: #f5f5f5;
 	}
 
-	.day.other-month {
-		color: #ccc;
+	.day-row.weekend {
+		background: #fdf0f0;
 	}
 
-	.day.today {
-		background: #e3f2fd;
-		border-color: #2196f3;
-		border-radius: 2px;
+	.day-row.weekend:hover {
+		background: #f9e0e0;
+	}
+
+	.day-row.today {
+		background: #e8f4fd;
+		outline: 1px solid #4a90d9;
+		outline-offset: -1px;
 	}
 
 	.day-number {
-		display: block;
+		font-size: 0.6rem;
+		font-weight: 500;
+		color: #111;
+		min-width: 14px;
+		text-align: right;
+		line-height: 1;
 	}
 
-	.events-indicator {
+	.day-abbrev {
+		font-size: 0.55rem;
+		color: #888;
+		font-weight: 400;
+		line-height: 1;
+	}
+
+	.day-row.weekend .day-abbrev {
+		color: #c0777a;
+	}
+
+	.day-row.today .day-number {
+		color: #1a6db5;
+		font-weight: 600;
+	}
+
+	.event-dots {
 		display: flex;
-		gap: 1px;
-		margin-top: 1px;
-		flex-wrap: wrap;
+		gap: 2px;
+		margin-left: auto;
+		align-items: center;
 	}
 
 	.event-dot {
 		width: 4px;
 		height: 4px;
-		background: #2196f3;
 		border-radius: 50%;
+		background: #4a90d9;
+		flex-shrink: 0;
 	}
 </style>

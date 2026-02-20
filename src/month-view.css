@@ -37,16 +37,22 @@
 .month-view-weekdays {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
-	background: #f9f9f9;
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #bbb;
 }
 
 .month-view-weekday {
-	padding: 0.5rem;
+	font-weight: 600;
+	font-size: 0.6rem;
+	letter-spacing: 0.12em;
+	padding: 0.3rem 0.2rem 0.4rem;
 	text-align: center;
-	font-weight: 500;
-	font-size: 0.875rem;
-	color: #666;
+	color: #333;
+	text-transform: uppercase;
+	border-right: 1px solid #bbb;
+}
+
+.month-view-weekday:last-child {
+	border-right: none;
 }
 
 .month-view-days {

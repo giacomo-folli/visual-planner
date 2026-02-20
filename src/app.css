@@ -9,7 +9,8 @@
 :global(body) {
 	min-width: 200px;
 	min-height: 200px;
-	font-family: 'DM Sans', sans-serif;
+	/* font-family: 'DM Sans', sans-serif; */
+	font-family: 'Archivo Narrow', sans-serif;
 }
 
 .material-icons {

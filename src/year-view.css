@@ -1,0 +1,109 @@
+/* YEAR VIEW STYLES */
+.year-view-container {
+	font-family: 'Archivo Narrow', sans-serif;
+	overflow: auto;
+}
+
+.year-view-calendar-grid {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.year-view-months-row {
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	gap: 0;
+	min-width: 900px;
+}
+
+.year-view-month-col {
+	border-right: 1px solid #ddd;
+}
+
+.year-view-month-col:last-child {
+	border-right: none;
+}
+
+.year-view-month-header {
+	text-align: center;
+	font-size: 0.6rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	color: #333;
+	padding: 0.3rem 0.2rem 0.4rem;
+	border-bottom: 1px solid #bbb;
+	text-transform: uppercase;
+}
+
+.year-view-days-col {
+	display: flex;
+	flex-direction: column;
+}
+
+.year-view-day-row {
+	display: flex;
+	align-items: center;
+	padding: 0.08rem 0.3rem;
+	gap: 0.2rem;
+	border-bottom: 1px solid #eee;
+	min-height: 18px;
+	position: relative;
+}
+
+.year-view-day-row:hover {
+	background: #f5f5f5;
+}
+
+.year-view-day-row.weekend {
+	background: #fdf0f0;
+}
+
+.year-view-day-row.weekend:hover {
+	background: #f9e0e0;
+}
+
+.year-view-day-row.today {
+	background: #e8f4fd;
+	outline: 1px solid #4a90d9;
+	outline-offset: -1px;
+}
+
+.year-view-day-number {
+	font-size: 0.6rem;
+	font-weight: 500;
+	color: #111;
+	min-width: 14px;
+	text-align: right;
+	line-height: 1;
+}
+
+.year-view-day-abbrev {
+	font-size: 0.55rem;
+	color: #888;
+	font-weight: 400;
+	line-height: 1;
+}
+
+.year-view-day-row.weekend .year-view-day-abbrev {
+	color: #c0777a;
+}
+
+.year-view-day-row.today .year-view-day-number {
+	color: #1a6db5;
+	font-weight: 600;
+}
+
+.year-view-event-dots {
+	display: flex;
+	gap: 2px;
+	margin-left: auto;
+	align-items: center;
+}
+
+.year-view-event-dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: #4a90d9;
+	flex-shrink: 0;
+}

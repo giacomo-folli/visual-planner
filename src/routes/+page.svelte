@@ -43,12 +43,12 @@
 </script>
 
 {#if loaded}
-	<button class="border p-2 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
+	<button class="border p-1 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
 {/if}
 
-<button class="border p-2 hover:cursor-pointer" onclick={clear}>clear</button>
+<button class="border p-1 hover:cursor-pointer" onclick={clear}>clear</button>
 
-<button class="border p-2 hover:cursor-pointer" onclick={toggleView}>
+<button class="border p-1 hover:cursor-pointer" onclick={toggleView}>
 	{#if view == 'month'}
 		year view
 	{:else}

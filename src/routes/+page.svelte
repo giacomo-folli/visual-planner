@@ -3,8 +3,9 @@
 	import googleService from '$lib/services/google.service';
 	import { calendarEvents } from '$lib/stores/calendarEvents.store';
 	import { CAL_EVENTS_LOCALSTORAGE_KEY } from '../types/enums';
-	import MonthView from '$lib/components/MonthView.svelte';
 	import type { GoogleCalendarEvent } from '../types/google';
+	import MonthView from '$lib/components/MonthView.svelte';
+	import YearView from '$lib/components/YearView.svelte';
 
 	let loaded = $state(false);
 
@@ -28,6 +29,12 @@
 		calendarEvents.clear();
 	}
 
+	let view: 'year' | 'month' = $state('month');
+	function toggleView() {
+		if (view == 'year') view = 'month';
+		else view = 'year';
+	}
+
 	onMount(async () => {
 		loadFromLocalStorage();
 
@@ -41,6 +48,18 @@
 
 <button class="border p-2 hover:cursor-pointer" onclick={clear}>clear</button>
 
+<button class="border p-2 hover:cursor-pointer" onclick={toggleView}>
+	{#if view == 'month'}
+		year view
+	{:else}
+		month view
+	{/if}
+</button>
+
 <div class="mt-2"></div>
 
-<MonthView />
+{#if view == 'month'}
+	<MonthView />
+{:else}
+	<YearView />
+{/if}

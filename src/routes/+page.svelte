@@ -29,7 +29,7 @@
 		calendarEvents.clear();
 	}
 
-	let view: 'year' | 'month' = $state('month');
+	let view: 'year' | 'month' = $state('year');
 	function toggleView() {
 		if (view == 'year') view = 'month';
 		else view = 'year';

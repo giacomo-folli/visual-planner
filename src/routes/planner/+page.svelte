@@ -430,7 +430,7 @@
 	<!-- ============================================================
        SETTINGS VIEW
   ============================================================ -->
-	{#if uiView === 'settings'}
+	<!-- {#if uiView === 'settings'}
 		<SettingsView {markDirty} {appdata} {permissions} />
-	{/if}
+	{/if} -->
 </div>

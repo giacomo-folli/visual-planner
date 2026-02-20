@@ -6,6 +6,7 @@
 	import type { GoogleCalendarEvent } from '../types/google';
 	import MonthView from '$lib/components/MonthView.svelte';
 	import YearView from '$lib/components/YearView.svelte';
+	import { goto } from '$app/navigation';
 
 	let loaded = $state(false);
 
@@ -42,19 +43,27 @@
 	});
 </script>
 
-{#if loaded}
-	<button class="border p-1 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
-{/if}
+<div class="flex w-full justify-between">
+	<div class="flex">
+		{#if loaded}
+			<button class="border p-1 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
+		{/if}
 
-<button class="border p-1 hover:cursor-pointer" onclick={clear}>clear</button>
+		<button class="border p-1 hover:cursor-pointer" onclick={clear}>clear</button>
 
-<button class="border p-1 hover:cursor-pointer" onclick={toggleView}>
-	{#if view == 'month'}
-		year view
-	{:else}
-		month view
-	{/if}
-</button>
+		<button class="border p-1 hover:cursor-pointer" onclick={toggleView}>
+			{#if view == 'month'}
+				year view
+			{:else}
+				month view
+			{/if}
+		</button>
+	</div>
+
+	<div>
+		<button class="border p-1 hover:cursor-pointer" onclick={() => goto('/home')}>home</button>
+	</div>
+</div>
 
 <div class="mt-2"></div>
 

@@ -44,7 +44,7 @@
 </script>
 
 <div class="flex w-full justify-between">
-	<div class="flex">
+	<div class="flex gap-2">
 		{#if loaded}
 			<button class="border p-1 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
 		{/if}

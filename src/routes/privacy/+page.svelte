@@ -2,17 +2,15 @@
 <p>Visual-Planner requires access to your Google account for the following purposes:</p>
 <ul>
 	<li>View your calendars to display your events in a year-view format for better planning.</li>
-	<li>
-		Manage its own configuration data in your Google Drive to save your app settings across sessions
-		and devices.
-	</li>
 </ul>
 <p>
-	Visual-Planner does not transfer, store, or share your personal data or any other information.
+	<strong>
+		Visual-Planner does not transfer, store, or share your personal data or any other information.
+	</strong>
 </p>
 
 <svelte:head>
-    <title>visual-planner | Privacy Policy</title>
+	<title>visual-planner | Privacy Policy</title>
 </svelte:head>
 
 <style>

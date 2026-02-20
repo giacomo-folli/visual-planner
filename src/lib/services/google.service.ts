@@ -13,7 +13,7 @@ interface QueryParams {
 }
 
 class GoogleService {
-    static CLIENT_ID = "972417936438-7tgk9uk8oe6n7gmgqavuh263spqspdca.apps.googleusercontent.com";
+    static CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     static SCOPES = 'https://www.googleapis.com/auth/calendar.events.readonly';
 
     private tokenClient: TokenClient | null = null;

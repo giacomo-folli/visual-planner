@@ -51,7 +51,9 @@
 			loadFromLocalStorage();
 		}
 
-		googleService.init().then(() => (loaded = true));
+		setTimeout(() => {
+			googleService.init().then(() => (loaded = true));
+		}, 1000);
 	});
 </script>
 

@@ -37,6 +37,10 @@
 	--text: hsl(220, 12%, 82%);
 }
 
+#toolbar img {
+	width: 18px;
+}
+
 @media print {
 	* {
 		-webkit-print-color-adjust: exact !important;

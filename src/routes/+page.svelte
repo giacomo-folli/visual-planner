@@ -4,9 +4,14 @@
 	import { calendarEvents } from '$lib/stores/calendarEvents.store';
 	import { CAL_EVENTS_LOCALSTORAGE_KEY } from '../types/enums';
 	import type { GoogleCalendarEvent } from '../types/google';
-	import MonthView from '$lib/components/MonthView.svelte';
+	// import MonthView from '$lib/components/MonthView.svelte';
 	import YearView from '$lib/components/YearView.svelte';
 	import { goto } from '$app/navigation';
+
+	import homeIcon from '$lib/assets/home.png';
+	import printIcon from '$lib/assets/print.png';
+	import syncIcon from '$lib/assets/sync.png';
+	import clearIcon from '$lib/assets/clear.png';
 
 	let loaded = $state(false);
 
@@ -30,11 +35,11 @@
 		calendarEvents.clear();
 	}
 
-	let view: 'year' | 'month' = $state('year');
-	function toggleView() {
-		if (view == 'year') view = 'month';
-		else view = 'year';
-	}
+	// let view: 'year' | 'month' = $state('year');
+	// function toggleView() {
+	// 	if (view == 'year') view = 'month';
+	// 	else view = 'year';
+	// }
 
 	function print() {
 		window.print();
@@ -47,33 +52,33 @@
 	});
 </script>
 
-<div class="flex w-full justify-between">
+<div id="toolbar" class="flex w-full justify-between">
 	<div class="flex gap-2">
 		{#if loaded}
-			<button class="border p-1 hover:cursor-pointer" onclick={authAndfetch}>fetch events</button>
+			<button class="flex items-center border p-1 hover:cursor-pointer" onclick={authAndfetch}>
+				<img src={syncIcon} alt="fetch events icon icon" />
+			</button>
 		{/if}
 
-		<button class="border p-1 hover:cursor-pointer" onclick={clear}>clear</button>
-
-		<button class="border p-1 hover:cursor-pointer" onclick={toggleView}>
-			{#if view == 'month'}
-				year view
-			{:else}
-				month view
-			{/if}
+		<button class="border p-1 hover:cursor-pointer" onclick={clear}>
+			<img src={clearIcon} alt="clear icon" />
 		</button>
 	</div>
 
 	<div class="flex gap-2">
-		<button class="border p-1 hover:cursor-pointer" onclick={() => goto('/home')}>home</button>
-		<button class="border p-1 hover:cursor-pointer" onclick={print}>print</button>
+		<button class="border p-1 hover:cursor-pointer" onclick={() => goto('/home')}>
+			<img src={homeIcon} alt="home icon" />
+		</button>
+		<button class="border p-1 hover:cursor-pointer" onclick={print}>
+			<img src={printIcon} alt="print icon" />
+		</button>
 	</div>
 </div>
 
-<div class="mt-2"></div>
+<!-- <div class="mt-2"></div> -->
 
-{#if view == 'month'}
+<!-- {#if view == 'month'}
 	<MonthView />
-{:else}
-	<YearView />
-{/if}
+{:else} -->
+<YearView />
+<!-- {/if} -->

@@ -20,6 +20,7 @@
 	}
 
 	function loadFromLocalStorage() {
+		console.log('Assuming is local env. Loading from localStorage');
 		const storedEvents = localStorage.getItem(CAL_EVENTS_LOCALSTORAGE_KEY);
 		const parsed = JSON.parse(storedEvents || '');
 
@@ -46,7 +47,9 @@
 	}
 
 	onMount(async () => {
-		loadFromLocalStorage();
+		if (import.meta.env.DEV) {
+			loadFromLocalStorage();
+		}
 
 		googleService.init().then(() => (loaded = true));
 	});

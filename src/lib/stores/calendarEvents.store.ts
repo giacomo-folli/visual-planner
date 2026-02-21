@@ -55,10 +55,13 @@ function createCalendarEventStore(): CalendarEventStore {
                     }
                 }
 
-                console.log("backup in localStorage")
-                console.log(events)
-                localStorage.setItem(CAL_EVENTS_LOCALSTORAGE_KEY, JSON.stringify(Array.from(events.entries())))
+                if (import.meta.env.DEV) {
+                    console.log("backup in localStorage")
+                    console.log(events)
+                    localStorage.setItem(CAL_EVENTS_LOCALSTORAGE_KEY, JSON.stringify(Array.from(events.entries())))
+                }
 
+                console.log("events fetched correctly")
                 return events
             })
         },

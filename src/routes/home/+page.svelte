@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/icon.png';
+	import syncIcon from '$lib/assets/sync.png';
 </script>
 
 <svelte:head>
@@ -25,23 +26,31 @@
 
 		<section class="feature">
 			<h2>Key Features</h2>
-			<ul>
-				<li>📅 <strong>Year View</strong> - See all 12 months on one screen</li>
-				<li>📊 <strong>Month View</strong> - Detailed view for focused planning</li>
-				<li>🔗 <strong>Google Calendar Integration</strong> - Sync your events instantly</li>
+			<ul class="list-disc">
+				<li><strong>Year View</strong> - See all 12 months on one screen</li>
+				<li class="line-through">
+					<strong>Month View</strong> - Detailed view for focused planning
+				</li>
+				<li><strong>Google Calendar Integration</strong> - Sync your events instantly</li>
 				<li>
-					🔒 <strong>Privacy First</strong> - Your data stays with you, never stored or shared
+					<strong>Privacy First</strong> - Your data stays with you, never stored or shared
 				</li>
 			</ul>
 		</section>
 
 		<section class="feature">
 			<h2>Getting Started</h2>
-			<p>
-				Click the <em>"fetch events"</em> button to connect your Google Calendar and start visualizing
-				your year. Toggle between year and month views to find the planning perspective that works best
-				for you.
-			</p>
+			<div>
+				Click the <span
+					><img class="mx-1 inline" src={syncIcon} width="18px" alt="sync icon" /></span
+				>
+				button to connect your Google Calendar and start visualizing your year.
+
+				<span class="line-through">
+					Toggle between year and month views to find the planning perspective that works best for
+					you.
+				</span>
+			</div>
 		</section>
 
 		<div class="cta">
@@ -125,7 +134,6 @@
 	.btn {
 		padding: 0.75rem 1.5rem;
 		border: 2px solid #111;
-		border-radius: 4px;
 		text-decoration: none;
 		font-weight: 500;
 		transition: all 0.2s;

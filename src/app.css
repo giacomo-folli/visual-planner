@@ -9,7 +9,6 @@
 :global(body) {
 	min-width: 200px;
 	min-height: 200px;
-	/* font-family: 'DM Sans', sans-serif; */
 	font-family: 'Archivo Narrow', sans-serif;
 }
 
@@ -19,28 +18,10 @@
 	padding-right: 0.5em;
 }
 
-
 /* ---- Root / CSS Variables ---- */
 .root {
-	--banner-h: 2.75em;
 	--bg: hsl(210, 15%, 97%);
-	--surface: hsl(210, 14%, 92%);
-	--banner-bg: hsl(215, 18%, 88%);
-	--banner-fg: hsl(215, 20%, 28%);
-	--toolbtn-fg: hsl(215, 18%, 38%);
-	--toolbtn-hover-bg: hsl(215, 18%, 80%);
-	--toolbtn-active-fg: hsl(215, 35%, 15%);
 	--text: hsl(215, 20%, 15%);
-	--text-muted: hsl(215, 12%, 50%);
-	--input-bg: hsl(0, 0%, 100%);
-	--input-border: hsl(215, 14%, 78%);
-	--link: hsl(215, 65%, 45%);
-	--granted: hsl(142, 50%, 38%);
-	--denied: hsl(0, 65%, 48%);
-	--accent: hsl(215, 70%, 52%);
-	--day-border: hsl(215, 14%, 88%);
-	--weekend-bg: hsl(215, 20%, 93%);
-	--today-bg: hsl(215, 80%, 90%);
 
 	background-color: var(--bg);
 	color: var(--text);
@@ -53,18 +34,16 @@
 
 .root.dark {
 	--bg: hsl(220, 14%, 14%);
-	--surface: hsl(220, 14%, 18%);
-	--banner-bg: hsl(220, 15%, 8%);
-	--banner-fg: hsl(220, 12%, 75%);
-	--toolbtn-fg: hsl(220, 12%, 60%);
-	--toolbtn-hover-bg: hsl(220, 14%, 28%);
-	--toolbtn-active-fg: hsl(220, 12%, 95%);
 	--text: hsl(220, 12%, 82%);
-	--text-muted: hsl(220, 10%, 55%);
-	--input-bg: hsl(220, 14%, 22%);
-	--input-border: hsl(220, 14%, 32%);
-	--link: hsl(215, 65%, 62%);
-	--day-border: hsl(220, 14%, 24%);
-	--weekend-bg: hsl(220, 14%, 18%);
-	--today-bg: hsl(215, 40%, 26%);
+}
+
+@media print {
+	* {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+	}
+
+	button {
+		display: none !important;
+	}
 }

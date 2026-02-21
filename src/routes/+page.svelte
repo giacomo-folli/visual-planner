@@ -36,6 +36,10 @@
 		else view = 'year';
 	}
 
+	function print() {
+		window.print();
+	}
+
 	onMount(async () => {
 		loadFromLocalStorage();
 
@@ -60,8 +64,9 @@
 		</button>
 	</div>
 
-	<div>
+	<div class="flex gap-2">
 		<button class="border p-1 hover:cursor-pointer" onclick={() => goto('/home')}>home</button>
+		<button class="border p-1 hover:cursor-pointer" onclick={print}>print</button>
 	</div>
 </div>
 

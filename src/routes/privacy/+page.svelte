@@ -28,7 +28,7 @@
 
 		<div class="cta">
 			<a href="/planner" class="btn">Open Planner</a>
-			<a href="/home" class="btn btn-secondary">Home</a>
+			<a href="/" class="btn btn-secondary">Home</a>
 		</div>
 	</div>
 </div>

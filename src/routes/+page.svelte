@@ -1,89 +1,158 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import googleService from '$lib/services/google.service';
-	import { calendarEvents } from '$lib/stores/calendarEvents.store';
-	import { CAL_EVENTS_LOCALSTORAGE_KEY } from '../types/enums';
-	import type { GoogleCalendarEvent } from '../types/google';
-	// import MonthView from '$lib/components/MonthView.svelte';
-	import YearView from '$lib/components/YearView.svelte';
-	import { goto } from '$app/navigation';
-
-	import homeIcon from '$lib/assets/home.png';
-	import printIcon from '$lib/assets/print.png';
+	import favicon from '$lib/assets/icon.png';
 	import syncIcon from '$lib/assets/sync.png';
-	import clearIcon from '$lib/assets/clear.png';
-
-	let loaded = $state(false);
-
-	async function authAndfetch() {
-		await googleService.authAndListEvents(calendarEvents);
-	}
-
-	function loadFromLocalStorage() {
-		console.log('Assuming is local env. Loading from localStorage');
-		const storedEvents = localStorage.getItem(CAL_EVENTS_LOCALSTORAGE_KEY);
-		const parsed = JSON.parse(storedEvents || '');
-
-		if (!!parsed && Array.isArray(parsed)) {
-			const map = new Map(parsed) as Map<string, GoogleCalendarEvent[]>;
-			calendarEvents.clear();
-			calendarEvents.set(map);
-		}
-	}
-
-	function clear() {
-		localStorage.setItem(CAL_EVENTS_LOCALSTORAGE_KEY, JSON.stringify({}));
-		calendarEvents.clear();
-	}
-
-	// let view: 'year' | 'month' = $state('year');
-	// function toggleView() {
-	// 	if (view == 'year') view = 'month';
-	// 	else view = 'year';
-	// }
-
-	function print() {
-		window.print();
-	}
-
-	onMount(async () => {
-		if (import.meta.env.DEV) {
-			loadFromLocalStorage();
-		}
-
-		setTimeout(() => {
-			googleService.init().then(() => (loaded = true));
-		}, 1000);
-	});
 </script>
 
-<div id="toolbar" class="flex w-full justify-between">
-	<div class="flex gap-2">
-		{#if loaded}
-			<button class="flex items-center border p-1 hover:cursor-pointer" onclick={authAndfetch}>
-				<img src={syncIcon} alt="fetch events icon icon" />
-			</button>
-		{/if}
+<svelte:head>
+	<title>visual-planner 2.0 | Home</title>
+</svelte:head>
 
-		<button class="border p-1 hover:cursor-pointer" onclick={clear}>
-			<img src={clearIcon} alt="clear icon" />
-		</button>
+<div class="home-container">
+	<div class="hero">
+		<img src={favicon} alt="visual-planner icon" class="icon" />
+		<h1>visual-planner 2.0</h1>
+		<p class="subtitle">Year-view planner for your Google Calendar</p>
 	</div>
 
-	<div class="flex gap-2">
-		<button class="border p-1 hover:cursor-pointer" onclick={() => goto('/home')}>
-			<img src={homeIcon} alt="home icon" />
-		</button>
-		<button class="border p-1 hover:cursor-pointer" onclick={print}>
-			<img src={printIcon} alt="print icon" />
-		</button>
+	<div class="content">
+		<section class="feature">
+			<h2>What is visual-planner?</h2>
+			<p>
+				Visual-planner is a free, open-source web application that transforms how you view your
+				Google Calendar events. Instead of navigating month-by-month, see your entire year at a
+				glance with an intuitive year-view layout.
+			</p>
+		</section>
+
+		<section class="feature">
+			<h2>Key Features</h2>
+			<ul class="list-disc">
+				<li><strong>Year View</strong> - See all 12 months on one screen</li>
+				<li class="line-through">
+					<strong>Month View</strong> - Detailed view for focused planning
+				</li>
+				<li><strong>Google Calendar Integration</strong> - Sync your events instantly</li>
+				<li>
+					<strong>Privacy First</strong> - Your data stays with you, never stored or shared
+				</li>
+			</ul>
+		</section>
+
+		<section class="feature">
+			<h2>Getting Started</h2>
+			<div>
+				Click the <span
+					><img class="mx-1 inline" src={syncIcon} width="18px" alt="sync icon" /></span
+				>
+				button to connect your Google Calendar and start visualizing your year.
+
+				<span class="line-through">
+					Toggle between year and month views to find the planning perspective that works best for
+					you.
+				</span>
+			</div>
+		</section>
+
+		<div class="cta">
+			<a href="/planner" class="btn">Open Planner</a>
+			<a href="/privacy" class="btn btn-secondary">Privacy Policy</a>
+		</div>
 	</div>
 </div>
 
-<!-- <div class="mt-2"></div> -->
+<style>
+	.home-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
 
-<!-- {#if view == 'month'}
-	<MonthView />
-{:else} -->
-<YearView />
-<!-- {/if} -->
+	.hero {
+		text-align: center;
+		margin-bottom: 3rem;
+		border-bottom: 2px solid #111;
+		padding-bottom: 2rem;
+	}
+
+	.icon {
+		width: 80px;
+		height: 80px;
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-size: 2.5rem;
+		margin: 0 0 0.5rem 0;
+		letter-spacing: 0.15em;
+		font-weight: 400;
+	}
+
+	.subtitle {
+		font-size: 1.125rem;
+		color: #666;
+		margin: 0;
+	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.feature {
+		line-height: 1.6;
+		color: #333;
+	}
+
+	.feature h2 {
+		font-size: 1.5rem;
+		margin: 0 0 0.75rem 0;
+		font-weight: 500;
+	}
+
+	.feature p {
+		margin: 0;
+	}
+
+	.feature ul {
+		margin: 0;
+		padding-left: 1.5rem;
+	}
+
+	.feature li {
+		margin-bottom: 0.75rem;
+	}
+
+	.cta {
+		display: flex;
+		gap: 1rem;
+		margin-top: 2rem;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.btn {
+		padding: 0.75rem 1.5rem;
+		border: 2px solid #111;
+		text-decoration: none;
+		font-weight: 500;
+		transition: all 0.2s;
+		display: inline-block;
+		background: #111;
+		color: white;
+	}
+
+	.btn:hover {
+		background: #333;
+		border-color: #333;
+	}
+
+	.btn-secondary {
+		background: white;
+		color: #111;
+	}
+
+	.btn-secondary:hover {
+		background: #f5f5f5;
+	}
+</style>
